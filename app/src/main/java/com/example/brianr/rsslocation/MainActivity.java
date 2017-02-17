@@ -10,4 +10,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
+
+ public int tragic(){
+     int i = 1;
+     int ii = 2;
+     return i + ii;
+ }
+
+
 }
