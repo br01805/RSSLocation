@@ -12,6 +12,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
 //Created by Brian Rawls
+//Jayla Greely
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
