@@ -7,15 +7,19 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import android.widget.Toast;
 import android.app.Dialog;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.*;
 
 //Created by Brian Rawls
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     GoogleMap mGoogleMap;
+    private static final LatLng MAVELIKARA = new LatLng(9.251086, 76.538452);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Toast.makeText(this, "Perfect!", Toast.LENGTH_LONG).show();
             setContentView(R.layout.activity_main);
             initMap();
+
         }else{
 
         }
@@ -53,5 +58,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void onMapReady(GoogleMap googleMap){
         mGoogleMap = googleMap;
+        mGoogleMap.setMyLocationEnabled(true);
+        mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        mGoogleMap.addMarker(new MarkerOptions().position(MAVELIKARA).title("Marker"));
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MAVELIKARA, 13));
+
     }
 }
