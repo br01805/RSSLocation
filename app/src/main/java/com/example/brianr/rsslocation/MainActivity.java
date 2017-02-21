@@ -13,6 +13,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 
 //Created by Brian Rawls
 //Jayla Greely
+//Tierney Ridley
+
+
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
