@@ -103,6 +103,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+
+
     }
     public boolean onMarkerClick(final Marker marker) {
 
