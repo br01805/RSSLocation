@@ -14,6 +14,7 @@ import com.google.android.gms.maps.GoogleMap.*;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.*;
+import android.content.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -30,13 +31,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     GoogleMap mGoogleMap;
     private static final LatLng MAVELIKARA = new LatLng(9.251086, 76.538452);
+    LatLng currentlocation;
     Geocoder geocoder;
     List<Address> addresses;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
 
         if(googleServicesAvailable()){
             Toast.makeText(this, "Perfect!", Toast.LENGTH_LONG).show();
@@ -70,9 +76,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void onMapReady(GoogleMap googleMap){
+
         mGoogleMap = googleMap;
         mGoogleMap.setMyLocationEnabled(true);
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
 
         mGoogleMap.addMarker(new MarkerOptions().position(MAVELIKARA)
                 .title("Marker")
