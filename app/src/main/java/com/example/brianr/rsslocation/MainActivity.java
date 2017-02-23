@@ -7,7 +7,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import android.widget.Toast;
 import android.app.Dialog;
-
+import android.location.*;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.*;
@@ -15,16 +15,24 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.*;
 
+import java.io.IOException;
+import java.util.*;
+
+
+
 /*Team: Brian Rawls
-
-
-
+        Jayla Greely
+        Tierney Ridley
 
         */
+
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     GoogleMap mGoogleMap;
     private static final LatLng MAVELIKARA = new LatLng(9.251086, 76.538452);
+    Geocoder geocoder;
+    List<Address> addresses;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,11 +94,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onMarkerDragEnd(Marker marker) {
                 // TODO Auto-generated method stub
-                LatLng position = marker.getPosition(); //
+                LatLng position = marker.getPosition();//
+
                 Toast.makeText(
                         MainActivity.this,
-                        "Lat: " + position.latitude + " \n"
-                                + "Long: " + position.longitude,
+                        getAddress(position),
                         Toast.LENGTH_LONG).show();
             }
 
@@ -102,10 +110,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 System.out.println("Draagging");
             }
         });
+    }
+    public String getAddress(LatLng position2){
+
+        geocoder = new Geocoder(this, Locale.getDefault());
+
+        try {
+            addresses = geocoder.getFromLocation(position2.latitude, position2.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+        } catch (IOException e) {
+            Toast.makeText(MainActivity.this, "Can't find address",
+                    Toast.LENGTH_LONG).show();
+        }
+
+        String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+        String city = addresses.get(0).getLocality();
+        String state = addresses.get(0).getAdminArea();
+        String country = addresses.get(0).getCountryName();
+        String postalCode = addresses.get(0).getPostalCode();
+        String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
 
 
+        return city + ", " + state + ", " + country;
 
     }
+
     public boolean onMarkerClick(final Marker marker) {
 
         if (marker.equals(mGoogleMap)) {
