@@ -27,15 +27,14 @@ import java.util.*;
 
         */
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, OnMapLongClickListener {
 
     GoogleMap mGoogleMap;
     private static final LatLng MAVELIKARA = new LatLng(9.251086, 76.538452);
     LatLng currentlocation;
     Geocoder geocoder;
     List<Address> addresses;
-
-
+    Marker m;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,20 +74,51 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return false;
     }
 
+    public void onMapLongClick(LatLng point) {
+        if(m == null){ //if marker exists (not null or whatever)
+            m =  mGoogleMap.addMarker(new MarkerOptions()
+                    .position(point)
+                    .draggable(true)
+                    .title("You are here")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            LatLng position = m.getPosition();//
+
+            Toast.makeText(
+                    MainActivity.this,
+                    getAddress(position),
+                    Toast.LENGTH_LONG).show();
+            //mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 21));
+        }
+        else{
+            m.setPosition(point);
+            LatLng position = m.getPosition();//
+
+            Toast.makeText(
+                    MainActivity.this,
+                    getAddress(position),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
     public void onMapReady(GoogleMap googleMap){
+
 
         mGoogleMap = googleMap;
         mGoogleMap.setMyLocationEnabled(true);
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
+       mGoogleMap.setOnMapLongClickListener(this);
 
-        mGoogleMap.addMarker(new MarkerOptions().position(MAVELIKARA)
+        /*mGoogleMap.addMarker(new MarkerOptions().position(MAVELIKARA)
                 .title("Marker")
                 .draggable(true)
                 .snippet("Hello")
                 .icon(BitmapDescriptorFactory
                         .defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MAVELIKARA, 13));
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MAVELIKARA, 13));*/
+
+
+
         mGoogleMap.setOnMarkerDragListener(new OnMarkerDragListener() {
 
             @Override
