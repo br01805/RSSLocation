@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">RSSLocation</string>
+    <string name="action_rss">RSS</string>
 </resources>

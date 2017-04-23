@@ -1,10 +1,20 @@
 package com.example.brianr.rsslocation;
+import com.example.brianr.rsslocation.adapter.PostItemAdapter;
+import com.example.brianr.rsslocation.vo.PostData;
 
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 import android.app.Dialog;
 import android.location.*;
@@ -14,8 +24,12 @@ import com.google.android.gms.maps.GoogleMap.*;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.*;
-import android.content.*;
+import android.content.res.*;
+import android.util.*;
+import android.widget.ArrayAdapter;
 
+import android.widget.ListView;
+import android.support.v7.widget.*;
 import java.io.IOException;
 import java.util.*;
 
@@ -28,6 +42,8 @@ import java.util.*;
         */
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, OnMapLongClickListener {
+    private PostData[] listData;
+    private static final int MY_LOCATION_REQUEST_CODE = 1;
 
     GoogleMap mGoogleMap;
     private static final LatLng MAVELIKARA = new LatLng(9.251086, 76.538452);
@@ -40,20 +56,48 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-
-
-        if(googleServicesAvailable()){
+        if (googleServicesAvailable()) {
             Toast.makeText(this, "Perfect!", Toast.LENGTH_LONG).show();
             setContentView(R.layout.activity_main);
+            Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+            setSupportActionBar(myToolbar);
             initMap();
 
-        }else{
+        } else {
 
         }
     }
 
-    private void initMap(){
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.morebuttons, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_rss:
+                setContentView(R.layout.activity_postlist);
+                this.generateDummyData();
+
+                ListView listView = (ListView) this.findViewById(R.id.postListView);
+
+                PostItemAdapter itemAdapter = new PostItemAdapter(this, R.layout.postitem, listData);
+
+                listView.setAdapter(itemAdapter);
+
+                return true;
+
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    private void initMap() {
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
     }
@@ -62,10 +106,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         GoogleApiAvailability api = GoogleApiAvailability.getInstance();
 
         int isAvailable = api.isGooglePlayServicesAvailable(this);
-        if(isAvailable == ConnectionResult.SUCCESS){
+        if (isAvailable == ConnectionResult.SUCCESS) {
             return true;
 
-        } else if (api.isUserResolvableError(isAvailable)){
+        } else if (api.isUserResolvableError(isAvailable)) {
             Dialog dialog = api.getErrorDialog(this, isAvailable, 0);
             dialog.show();
         } else {
@@ -75,11 +119,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void onMapLongClick(LatLng point) {
-        if(m == null){ //if marker exists (not null or whatever)
-            m =  mGoogleMap.addMarker(new MarkerOptions()
+        if (m == null) { //if marker exists (not null or whatever)
+            m = mGoogleMap.addMarker(new MarkerOptions()
                     .position(point)
                     .draggable(true)
-                    .title("You are here")
+                    .title("Tap To Delete")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
             LatLng position = m.getPosition();//
 
@@ -88,8 +132,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     getAddress(position),
                     Toast.LENGTH_LONG).show();
             //mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 21));
-        }
-        else{
+        } else {
             m.setPosition(point);
             LatLng position = m.getPosition();//
 
@@ -100,14 +143,41 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    public void onMapReady(GoogleMap googleMap){
+    public void onMapReady(GoogleMap googleMap) {
 
 
         mGoogleMap = googleMap;
+
+
+
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = mGoogleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.style_json));
+
+            if (!success) {
+                Log.e("MapsActivityRaw", "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e("MapsActivityRaw", "Can't find style.", e);
+        }
+
+
         mGoogleMap.setMyLocationEnabled(true);
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-       mGoogleMap.setOnMapLongClickListener(this);
+        mGoogleMap.setOnMapLongClickListener(this);
+
+        mGoogleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+            public void onInfoWindowClick(Marker marker) {
+                // Remove the marker
+                marker.remove();
+                m = null;
+            }
+        });
+
 
         /*mGoogleMap.addMarker(new MarkerOptions().position(MAVELIKARA)
                 .title("Marker")
@@ -116,7 +186,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .icon(BitmapDescriptorFactory
                         .defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MAVELIKARA, 13));*/
-
 
 
         mGoogleMap.setOnMarkerDragListener(new OnMarkerDragListener() {
@@ -149,7 +218,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
     }
-    public String getAddress(LatLng position2){
+
+    public String getAddress(LatLng position2) {
 
         geocoder = new Geocoder(this, Locale.getDefault());
 
@@ -185,6 +255,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Toast.LENGTH_SHORT).show();
         }
         return true;
+    }
+
+    private void generateDummyData() {
+        PostData data = null;
+        listData = new PostData[10];
+        for (int i = 0; i < 10; i++) { //please ignore this comment :>
+            data = new PostData();
+            data.postDate = "May 20, 2013";
+            data.postTitle = "Post " + (i + 1) + " Title: This is the Post Title from RSS Feed";
+            data.postThumbUrl = null;
+            listData[i] = data;
+        }
     }
 
 

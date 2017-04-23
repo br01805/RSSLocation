@@ -1,15 +1,4 @@
-<resources>
-
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
- <string name="style_json">
-  [
-    [
+[
   {
     "elementType": "geometry",
     "stylers": [
@@ -40,15 +29,6 @@
     "stylers": [
       {
         "color": "#c9b2a6"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.country",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#ffe202"
       }
     ]
   },
@@ -233,8 +213,3 @@
     ]
   }
 ]
-  </string>
-
-
-
-</resources>
