@@ -2,6 +2,7 @@ package com.example.brianr.rsslocation;
 import com.example.brianr.rsslocation.adapter.PostItemAdapter;
 import com.example.brianr.rsslocation.vo.PostData;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
@@ -44,6 +45,13 @@ import java.util.*;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, OnMapLongClickListener {
     private PostData[] listData;
     private static final int MY_LOCATION_REQUEST_CODE = 1;
+    private String address;
+    private String city;
+    private String state;
+    private String country;
+    private String postalCode;
+    private String knownName;
+    private String MapKeySearch;
 
     GoogleMap mGoogleMap;
     private static final LatLng MAVELIKARA = new LatLng(9.251086, 76.538452);
@@ -51,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     Geocoder geocoder;
     List<Address> addresses;
     Marker m;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,14 +86,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_rss:
-                setContentView(R.layout.activity_postlist);
-                this.generateDummyData();
-
-                ListView listView = (ListView) this.findViewById(R.id.postListView);
-
-                PostItemAdapter itemAdapter = new PostItemAdapter(this, R.layout.postitem, listData);
-
-                listView.setAdapter(itemAdapter);
+                Intent intent = new Intent(this, RSSMainActivity.class);
+                if(MapKeySearch!=null) {
+                    MapKeySearch = MapKeySearch.toLowerCase();
+                    intent.putExtra("keysearch", MapKeySearch);
+                }
+                startActivity(intent);
+                finish();
 
                 return true;
 
@@ -230,12 +238,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Toast.LENGTH_LONG).show();
         }
 
-        String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-        String city = addresses.get(0).getLocality();
-        String state = addresses.get(0).getAdminArea();
-        String country = addresses.get(0).getCountryName();
-        String postalCode = addresses.get(0).getPostalCode();
-        String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
+        address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+        city = addresses.get(0).getLocality();
+        state = addresses.get(0).getAdminArea();
+        country = addresses.get(0).getCountryName();
+        postalCode = addresses.get(0).getPostalCode();
+        knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
+
+        if(country != null)
+        MapKeySearch = country;
 
 
         return city + ", " + state + ", " + country;
