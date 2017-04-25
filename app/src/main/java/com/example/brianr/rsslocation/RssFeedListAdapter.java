@@ -48,10 +48,10 @@ public class RssFeedListAdapter
                 final int position = holder.getAdapterPosition();
 
                 if(position == finalPosition){
-                    urlArticleLink = mRssFeedModels.get(position).link;
+                    urlArticleLink = mRssFeedModels.get(position+1).link;
                 }
                 else {
-                    urlArticleLink = mRssFeedModels.get(position+1).link;
+                    urlArticleLink = mRssFeedModels.get(position).link;
                 }
 
                 Intent intent = new Intent(view.getContext(), PostViewActivity.class);

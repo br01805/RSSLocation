@@ -15,13 +15,11 @@ import android.util.Xml;
 import android.text.TextWatcher;
 import android.text.Editable;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.brianr.rsslocation.RssFeedListAdapter;
-import com.example.brianr.rsslocation.RssFeedModel;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -34,7 +32,7 @@ import java.util.List;
 
 public class RSSMainActivity extends AppCompatActivity {
 
-    private static final String TAG = "RSSMainActivity";
+    private static final String TAG = "MainActivity";
 
     private RecyclerView mRecyclerView;
     private Button mFetchFeedButton;
@@ -62,10 +60,10 @@ public class RSSMainActivity extends AppCompatActivity {
         mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         mSearchKeyword = (EditText) findViewById(R.id.searchKeywordText);
         //mSearchKeyword.setHint();
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-       mSearchKeyword.addTextChangedListener(new TextWatcher() {
+        mSearchKeyword.addTextChangedListener(new TextWatcher() {
 
             public void afterTextChanged(Editable s) {
                 //TODO Auto-generated method stub
@@ -77,7 +75,7 @@ public class RSSMainActivity extends AppCompatActivity {
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 //set country search keyword
-                searchKeyword = mSearchKeyword.getText().toString();
+                searchKeyword = mSearchKeyword.getText().toString().toLowerCase();
             }
         });
 
@@ -95,13 +93,13 @@ public class RSSMainActivity extends AppCompatActivity {
                 new FetchFeedTask().execute((Void) null);
             }
         });
-
         if(MapKeySearch != null) {
             searchKeyword = MapKeySearch;
             RssFeedListAdapter.urlArticleLink = " ";
             new FetchFeedTask().execute((Void) null);
         }
     }
+
 
     public void positionAction(View view) {
         int position = (int) view.getTag();
@@ -121,8 +119,11 @@ public class RSSMainActivity extends AppCompatActivity {
             xmlPullParser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
             xmlPullParser.setInput(inputStream, null);
 
-            //xmlPullParser.nextTag();
+            xmlPullParser.nextTag();
+            xmlPullParser.nextTag();
+
             while (xmlPullParser.next() != XmlPullParser.END_DOCUMENT) {
+
                 int eventType = xmlPullParser.getEventType();
 
                 String name = xmlPullParser.getName();
@@ -143,54 +144,51 @@ public class RSSMainActivity extends AppCompatActivity {
                     }
                 }
 
-                Log.d("RSSMainActivity", "Parsing name ==> " + name);
+                Log.d("MainActivity", "Parsing name ==> " + name);
                 String result = "";
+
                 if (xmlPullParser.next() == XmlPullParser.TEXT) {
                     result = xmlPullParser.getText();
                     xmlPullParser.nextTag();
+                    xmlPullParser.next();
                 }
 
                 if (name.equalsIgnoreCase("title")) {
                     title = result;
-                    Log.w("MAPRSS", title);
                 } else if (name.equalsIgnoreCase("link")) {
                     link = result;
-                    Log.w("MAPRSS", link);
+                    Log.w("app", link);
                 } else if (name.equalsIgnoreCase("description")) {
                     description = result;
-                    Log.w("MAPRSS", description);
                 }
 
                 if (title != null && link != null && description != null && isItem != false) {
                     //if statement to search for keyword country
-                    if(title.toLowerCase().contains(searchKeyword) || description.toLowerCase().contains(searchKeyword)){
 
-                        RssFeedModel item = new RssFeedModel(title, link, description);
+                    RssFeedModel item = new RssFeedModel(title, link, description);
+                    //items.remove(item);
+
+                    if(title.toString().toLowerCase().contains(searchKeyword) || description.toString().toLowerCase().contains(searchKeyword)){
                         items.add(item);
-
-                        title = null;
-                        link = null;
-                        description = null;
-                        isItem = false;
                     }
 
-                    else {
-
-                        title = null;
-                        link = null;
-                        description = null;
-                        isItem = false;
-                    }
+                    title = null;
+                    link = null;
+                    description = null;
+                    isItem = false;
 
                 }
 
             }
 
             return items;
+
         } finally {
             inputStream.close();
         }
     }
+
+
 
     private class FetchFeedTask extends AsyncTask<Void, Void, Boolean> {
 
