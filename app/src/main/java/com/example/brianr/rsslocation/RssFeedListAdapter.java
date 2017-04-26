@@ -40,7 +40,7 @@ public class RssFeedListAdapter
 
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rss_feed, parent, false);
         final FeedModelViewHolder holder = new FeedModelViewHolder(v);
-        final int finalPosition = getItemCount()-1;
+        final int finalPosition = getItemCount();
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,7 +48,7 @@ public class RssFeedListAdapter
                 final int position = holder.getAdapterPosition();
 
                 if(position == finalPosition){
-                    urlArticleLink = mRssFeedModels.get(position+1).link;
+                    urlArticleLink = mRssFeedModels.get(position).link;
                 }
                 else {
                     urlArticleLink = mRssFeedModels.get(position).link;

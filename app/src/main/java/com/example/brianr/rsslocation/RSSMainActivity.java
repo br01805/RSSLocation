@@ -119,8 +119,8 @@ public class RSSMainActivity extends AppCompatActivity {
             xmlPullParser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
             xmlPullParser.setInput(inputStream, null);
 
-            xmlPullParser.nextTag();
-            xmlPullParser.nextTag();
+           // xmlPullParser.nextTag();
+           // xmlPullParser.nextTag();
 
             while (xmlPullParser.next() != XmlPullParser.END_DOCUMENT) {
 
@@ -150,7 +150,7 @@ public class RSSMainActivity extends AppCompatActivity {
                 if (xmlPullParser.next() == XmlPullParser.TEXT) {
                     result = xmlPullParser.getText();
                     xmlPullParser.nextTag();
-                    xmlPullParser.next();
+                   // xmlPullParser.next();
                 }
 
                 if (name.equalsIgnoreCase("title")) {
