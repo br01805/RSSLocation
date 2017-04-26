@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     intent.putExtra("keysearch", MapKeySearch);
                 }
                 startActivity(intent);
-                finish();
+               // finish();
 
                 return true;
 
